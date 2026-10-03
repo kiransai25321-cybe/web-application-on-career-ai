@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account - AI Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-6">
+  <div class="w-full max-w-md">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex p-3 rounded-2xl bg-[#FFF1E8] border border-[#FDBA9A]/60 text-[#E11D48] mb-4 shadow-md shadow-[#F4728B]/10">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#29243A]">Create your account</h1>
+      <p class="text-sm text-[#797386] mt-2">Get personalized resume diagnostics, job fit scores, and career roadmaps</p>
+    </div>
+
+    <!-- Signup Card -->
+    <div class="glass-panel p-8 rounded-3xl shadow-xl relative overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+      <div class="absolute -top-24 -right-24 w-48 h-48 bg-[#FDBA9A]/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Google OAuth Button -->
+      {% if google_oauth_enabled %}
+      <div class="mb-6">
+        <a href="/auth/google" class="w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-xl bg-white hover:bg-[#FFF1E8] border border-[#F0E5DE] text-[#29243A] font-semibold text-sm transition-all duration-200 group shadow-sm">
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span class="group-hover:text-[#E11D48]">Sign up with Google</span>
+        </a>
+
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-[#F0E5DE]"></div>
+          </div>
+          <div class="relative flex justify-center text-xs uppercase">
+            <span class="bg-[#FFFCF8] px-3 text-[#797386] font-bold tracking-wider">or sign up with email</span>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Signup Form -->
+      <form action="/signup" method="POST" id="signup-form" class="space-y-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div>
+          <label for="name" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-1.5">Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            placeholder="e.g. Alex Morgan"
+            class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] placeholder-[#A19BAA] focus:outline-none focus:ring-2 focus:ring-[#F4728B] transition-all text-sm"
+          >
+        </div>
+
+        <div>
+          <label for="username" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-1.5">Username</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            required 
+            pattern="[a-zA-Z0-9_]{3,30}"
+            title="3-30 characters, letters, numbers, or underscores"
+            placeholder="e.g. alex_m"
+            class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] placeholder-[#A19BAA] focus:outline-none focus:ring-2 focus:ring-[#F4728B] transition-all text-sm"
+          >
+        </div>
+
+        <div>
+          <label for="email" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-1.5">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            required 
+            placeholder="alex@example.com"
+            class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] placeholder-[#A19BAA] focus:outline-none focus:ring-2 focus:ring-[#F4728B] transition-all text-sm"
+          >
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-1.5">Password</label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              required 
+              placeholder="••••••••"
+              class="w-full px-4 py-2.5 pr-12 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] placeholder-[#A19BAA] focus:outline-none focus:ring-2 focus:ring-[#F4728B] transition-all text-sm"
+            >
+            <button 
+              type="button" 
+              class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password-btn text-[#797386] hover:text-[#29243A] transition-colors" 
+              data-target="password"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label for="confirm_password" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-1.5">Confirm Password</label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="confirm_password" 
+              name="confirm_password" 
+              required 
+              placeholder="••••••••"
+              class="w-full px-4 py-2.5 pr-12 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] placeholder-[#A19BAA] focus:outline-none focus:ring-2 focus:ring-[#F4728B] transition-all text-sm"
+            >
+            <button 
+              type="button" 
+              class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password-btn text-[#797386] hover:text-[#29243A] transition-colors" 
+              data-target="confirm_password"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline Password Strength Checklist -->
+        <div class="p-3.5 rounded-xl bg-[#FFF1E8]/60 border border-[#FDBA9A]/40 text-xs space-y-1.5">
+          <div class="font-bold text-[#797386] mb-1">Password Requirements:</div>
+          <div id="req-length" class="flex items-center space-x-2 text-[#797386] transition-colors">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#797386] indicator"></span>
+            <span>At least 8 characters</span>
+          </div>
+          <div id="req-letter" class="flex items-center space-x-2 text-[#797386] transition-colors">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#797386] indicator"></span>
+            <span>At least one letter (a-z, A-Z)</span>
+          </div>
+          <div id="req-number" class="flex items-center space-x-2 text-[#797386] transition-colors">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#797386] indicator"></span>
+            <span>At least one number (0-9)</span>
+          </div>
+          <div id="req-match" class="flex items-center space-x-2 text-[#797386] transition-colors">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#797386] indicator"></span>
+            <span>Passwords match</span>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-3 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[#F4728B] via-[#FB923C] to-[#FDBA9A] hover:from-[#E11D48] hover:to-[#F97316] shadow-lg shadow-[#F4728B]/25 transition-all duration-200 mt-2"
+        >
+          Create Account
+        </button>
+      </form>
+
+      <!-- Footer / Login link -->
+      <div class="mt-6 text-center text-xs text-[#797386]">
+        Already have an account? 
+        <a href="/login" class="font-bold text-[#E11D48] hover:underline ml-1">Sign in here</a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Live password validation
+  const pwdInput = document.getElementById('password');
+  const confirmPwdInput = document.getElementById('confirm_password');
+
+  const reqLength = document.getElementById('req-length');
+  const reqLetter = document.getElementById('req-letter');
+  const reqNumber = document.getElementById('req-number');
+  const reqMatch = document.getElementById('req-match');
+
+  function updateItem(el, passed) {
+    const indicator = el.querySelector('.indicator');
+    if (passed) {
+      el.classList.remove('text-[#797386]');
+      el.classList.add('text-emerald-700', 'font-semibold');
+      indicator.classList.remove('bg-[#797386]');
+      indicator.classList.add('bg-emerald-600');
+    } else {
+      el.classList.add('text-[#797386]');
+      el.classList.remove('text-emerald-700', 'font-semibold');
+      indicator.classList.add('bg-[#797386]');
+      indicator.classList.remove('bg-emerald-600');
+    }
+  }
+
+  function validate() {
+    const val = pwdInput.value;
+    const confirmVal = confirmPwdInput.value;
+
+    updateItem(reqLength, val.length >= 8);
+    updateItem(reqLetter, /[A-Za-z]/.test(val));
+    updateItem(reqNumber, /\d/.test(val));
+    updateItem(reqMatch, val.length > 0 && val === confirmVal);
+  }
+
+  pwdInput.addEventListener('input', validate);
+  confirmPwdInput.addEventListener('input', validate);
+</script>
+{% endblock %}

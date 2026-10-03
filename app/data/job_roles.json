@@ -1,0 +1,203 @@
+{
+  "roles": [
+    {
+      "id": "python-developer",
+      "title": "Python Developer",
+      "category": "Software Engineering",
+      "description": "Develops backend services, automation scripts, and scalable APIs using Python and modern web frameworks.",
+      "required_skills": ["Python", "FastAPI", "PostgreSQL", "Git", "REST APIs"],
+      "nice_to_have_skills": ["Docker", "Redis", "CI/CD", "AWS", "SQL", "Linux", "Celery"],
+      "skill_weights": {
+        "Python": 1.5,
+        "FastAPI": 1.3,
+        "Django": 1.2,
+        "Flask": 1.1,
+        "PostgreSQL": 1.2,
+        "SQL": 1.1,
+        "REST APIs": 1.2,
+        "Git": 1.0,
+        "Docker": 1.0,
+        "Redis": 0.9,
+        "CI/CD": 0.8,
+        "Linux": 0.8,
+        "AWS": 0.9
+      }
+    },
+    {
+      "id": "data-scientist",
+      "title": "Data Scientist",
+      "category": "Data & AI",
+      "description": "Applies statistical modeling, machine learning, and data exploration to uncover insights and build predictive solutions.",
+      "required_skills": ["Python", "pandas", "NumPy", "scikit-learn", "SQL", "Machine Learning"],
+      "nice_to_have_skills": ["TensorFlow", "PyTorch", "Matplotlib", "Seaborn", "Tableau", "Apache Spark", "Docker"],
+      "skill_weights": {
+        "Python": 1.5,
+        "pandas": 1.3,
+        "NumPy": 1.2,
+        "scikit-learn": 1.4,
+        "SQL": 1.3,
+        "Machine Learning": 1.4,
+        "TensorFlow": 1.0,
+        "PyTorch": 1.1,
+        "Matplotlib": 0.8,
+        "Tableau": 0.9,
+        "Apache Spark": 1.0
+      }
+    },
+    {
+      "id": "data-analyst",
+      "title": "Data Analyst",
+      "category": "Data & AI",
+      "description": "Transforms raw data into actionable dashboards and business insights using SQL, BI tools, and data analysis libraries.",
+      "required_skills": ["SQL", "Tableau", "Power BI", "pandas", "Python", "Communication"],
+      "nice_to_have_skills": ["NumPy", "Matplotlib", "Seaborn", "PostgreSQL", "Excel", "Problem Solving"],
+      "skill_weights": {
+        "SQL": 1.5,
+        "Tableau": 1.3,
+        "Power BI": 1.3,
+        "Python": 1.2,
+        "pandas": 1.2,
+        "Communication": 1.0,
+        "PostgreSQL": 0.9,
+        "Problem Solving": 0.9
+      }
+    },
+    {
+      "id": "frontend-developer",
+      "title": "Frontend Developer",
+      "category": "Software Engineering",
+      "description": "Creates responsive, accessible, and high-performance user interfaces using modern JavaScript frameworks and CSS.",
+      "required_skills": ["JavaScript", "TypeScript", "React", "HTML", "CSS", "Tailwind CSS", "Git"],
+      "nice_to_have_skills": ["Next.js", "Vue.js", "Figma", "REST APIs", "GraphQL", "Bootstrap"],
+      "skill_weights": {
+        "JavaScript": 1.5,
+        "TypeScript": 1.4,
+        "React": 1.5,
+        "HTML": 1.1,
+        "CSS": 1.1,
+        "Tailwind CSS": 1.2,
+        "Next.js": 1.2,
+        "Git": 1.0,
+        "Figma": 0.9
+      }
+    },
+    {
+      "id": "backend-developer",
+      "title": "Backend Developer",
+      "category": "Software Engineering",
+      "description": "Architects resilient microservices, manages databases, and builds secure APIs for high-throughput distributed systems.",
+      "required_skills": ["Python", "FastAPI", "PostgreSQL", "REST APIs", "Docker", "Git", "SQL"],
+      "nice_to_have_skills": ["Redis", "Kubernetes", "AWS", "Microservices", "CI/CD", "Linux", "Node.js"],
+      "skill_weights": {
+        "Python": 1.4,
+        "FastAPI": 1.3,
+        "PostgreSQL": 1.3,
+        "REST APIs": 1.4,
+        "Docker": 1.2,
+        "SQL": 1.2,
+        "Redis": 1.1,
+        "Microservices": 1.2,
+        "Kubernetes": 1.0,
+        "AWS": 1.1,
+        "Git": 1.0
+      }
+    },
+    {
+      "id": "full-stack-developer",
+      "title": "Full Stack Developer",
+      "category": "Software Engineering",
+      "description": "Builds complete web applications end to end, handling frontend interactive UI, server-side APIs, and database persistence.",
+      "required_skills": ["JavaScript", "TypeScript", "React", "Python", "FastAPI", "PostgreSQL", "Git", "HTML", "CSS"],
+      "nice_to_have_skills": ["Tailwind CSS", "Docker", "Node.js", "Redis", "Next.js", "AWS", "REST APIs"],
+      "skill_weights": {
+        "JavaScript": 1.3,
+        "TypeScript": 1.2,
+        "React": 1.3,
+        "Python": 1.3,
+        "FastAPI": 1.2,
+        "PostgreSQL": 1.2,
+        "HTML": 1.0,
+        "CSS": 1.0,
+        "Tailwind CSS": 1.0,
+        "Docker": 1.0,
+        "REST APIs": 1.1,
+        "Git": 1.0
+      }
+    },
+    {
+      "id": "devops-engineer",
+      "title": "DevOps Engineer",
+      "category": "Infrastructure & Operations",
+      "description": "Automates cloud infrastructure, manages CI/CD pipelines, container orchestration, and system reliability.",
+      "required_skills": ["Docker", "Kubernetes", "Linux", "CI/CD", "Terraform", "AWS", "Git"],
+      "nice_to_have_skills": ["Ansible", "GitHub Actions", "Python", "Bash", "Nginx", "Azure", "Google Cloud"],
+      "skill_weights": {
+        "Docker": 1.5,
+        "Kubernetes": 1.5,
+        "Linux": 1.3,
+        "CI/CD": 1.4,
+        "Terraform": 1.3,
+        "AWS": 1.3,
+        "GitHub Actions": 1.1,
+        "Bash": 1.1,
+        "Python": 1.0,
+        "Git": 1.0
+      }
+    },
+    {
+      "id": "ml-engineer",
+      "title": "Machine Learning Engineer",
+      "category": "Data & AI",
+      "description": "Designs, trains, and operationalizes machine learning and deep learning pipelines in scalable production environments.",
+      "required_skills": ["Python", "PyTorch", "TensorFlow", "scikit-learn", "Docker", "Machine Learning", "Git"],
+      "nice_to_have_skills": ["Large Language Models", "Natural Language Processing", "pandas", "NumPy", "Kubernetes", "FastAPI", "AWS"],
+      "skill_weights": {
+        "Python": 1.5,
+        "PyTorch": 1.4,
+        "TensorFlow": 1.3,
+        "scikit-learn": 1.3,
+        "Machine Learning": 1.4,
+        "Large Language Models": 1.3,
+        "Natural Language Processing": 1.2,
+        "Docker": 1.1,
+        "FastAPI": 1.0
+      }
+    },
+    {
+      "id": "cloud-engineer",
+      "title": "Cloud Engineer",
+      "category": "Infrastructure & Operations",
+      "description": "Architects, migrates, and secures multi-region infrastructure on public cloud platforms like AWS, Azure, or GCP.",
+      "required_skills": ["AWS", "Docker", "Terraform", "Linux", "Git", "CI/CD"],
+      "nice_to_have_skills": ["Kubernetes", "Azure", "Google Cloud", "Python", "Bash", "Ansible", "Nginx"],
+      "skill_weights": {
+        "AWS": 1.5,
+        "Terraform": 1.4,
+        "Docker": 1.3,
+        "Linux": 1.2,
+        "Kubernetes": 1.2,
+        "Azure": 1.1,
+        "Google Cloud": 1.1,
+        "CI/CD": 1.2
+      }
+    },
+    {
+      "id": "qa-test-engineer",
+      "title": "QA / Test Engineer",
+      "category": "Quality Assurance",
+      "description": "Builds automated test suites, performs regression and integration testing, and ensures product stability.",
+      "required_skills": ["Python", "Postman", "Git", "REST APIs", "CI/CD", "Problem Solving"],
+      "nice_to_have_skills": ["Docker", "Linux", "JavaScript", "Jira", "SQL", "Selenium"],
+      "skill_weights": {
+        "Python": 1.3,
+        "Postman": 1.4,
+        "REST APIs": 1.3,
+        "Git": 1.1,
+        "CI/CD": 1.2,
+        "Problem Solving": 1.2,
+        "Jira": 1.0,
+        "SQL": 1.0
+      }
+    }
+  ]
+}

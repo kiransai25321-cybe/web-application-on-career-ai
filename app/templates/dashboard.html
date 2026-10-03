@@ -1,0 +1,655 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Dashboard - {{ analysis.selected_role }}{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- Dashboard Top Header -->
+  <div class="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-[#FFFCF8] border border-[#F0E5DE]">
+    <div class="space-y-2">
+      <div class="flex items-center space-x-3">
+        <span class="text-xs font-bold px-3 py-1 rounded-full bg-[#FFF1E8] text-[#E11D48] border border-[#FDBA9A]/60">
+          {{ analysis.file_type.upper() }} Resume
+        </span>
+        <span class="text-xs text-[#797386] font-mono">{{ analysis.created_at[:10] }}</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-[#29243A] flex items-center space-x-3">
+        <span>{{ contact_info.name or 'Candidate Profile' }}</span>
+        {% if contact_info.years_of_experience %}
+        <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-[#FFF1E8] text-[#E11D48] border border-[#FDBA9A]/40">
+          ~{{ contact_info.years_of_experience }} Yrs Exp
+        </span>
+        {% endif %}
+      </h1>
+      <p class="text-xs sm:text-sm text-[#797386] flex flex-wrap items-center gap-3">
+        <span>File: <strong class="text-[#29243A]">{{ analysis.filename }}</strong></span>
+        {% if contact_info.email %}
+        <span>&bull; {{ contact_info.email }}</span>
+        {% endif %}
+        {% if contact_info.phone %}
+        <span>&bull; {{ contact_info.phone }}</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center space-x-3 shrink-0">
+      <a 
+        href="/report/{{ analysis.id }}.pdf" 
+        target="_blank"
+        class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#F4728B] to-[#FB923C] hover:from-[#E11D48] hover:to-[#F97316] shadow-md shadow-[#F4728B]/20 transition-all flex items-center space-x-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span>Download PDF Report</span>
+      </a>
+
+      <button 
+        type="button" 
+        onclick="document.getElementById('rematch-modal').classList.remove('hidden')"
+        class="px-4 py-2.5 rounded-xl text-xs font-bold text-[#29243A] bg-white hover:bg-[#FFF1E8] border border-[#F0E5DE] transition-colors flex items-center space-x-2 shadow-sm"
+      >
+        <svg class="w-4 h-4 text-[#797386]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        <span>Change Target Role</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Score Summary Banner -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    
+    <!-- Quality Score Card -->
+    <div class="glass-card p-6 rounded-2xl relative overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-[#797386]">Resume Quality</span>
+        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full {% if analysis.quality_score >= 80 %}bg-emerald-50 text-emerald-700 border border-emerald-200{% elif analysis.quality_score >= 60 %}bg-amber-50 text-amber-700 border border-amber-200{% else %}bg-rose-50 text-rose-700 border border-rose-200{% endif %}">
+          {% if analysis.quality_score >= 80 %}Strong{% elif analysis.quality_score >= 60 %}Moderate{% else %}Needs Work{% endif %}
+        </span>
+      </div>
+      <div class="flex items-baseline space-x-2">
+        <span class="text-4xl font-extrabold text-[#29243A]">{{ analysis.quality_score }}</span>
+        <span class="text-[#797386] text-sm">/ 100</span>
+      </div>
+      <div class="mt-3 text-xs text-[#797386] flex items-center space-x-1">
+        <span>Potential Score:</span>
+        <strong class="text-emerald-600 font-bold ml-1">{{ mistakes_data.potential_score }}/100</strong>
+        <span class="text-[#797386]">(after fixes)</span>
+      </div>
+    </div>
+
+    <!-- Best Fit Role Card -->
+    <div class="glass-card p-6 rounded-2xl relative overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-[#797386]">Current Target Role</span>
+        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FFF1E8] text-[#E11D48] border border-[#FDBA9A]/50">Target</span>
+      </div>
+      <div class="text-xl font-bold text-[#29243A] truncate">{{ analysis.selected_role }}</div>
+      <div class="mt-3 text-xs text-[#797386]">
+        Match Fit Score: <strong class="text-[#E11D48] font-bold">{{ analysis.match_score }}%</strong>
+      </div>
+    </div>
+
+    <!-- Skills Found Card -->
+    <div class="glass-card p-6 rounded-2xl relative overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-[#797386]">Skills Extracted</span>
+        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">NLP Matched</span>
+      </div>
+      <div class="flex items-baseline space-x-2">
+        <span class="text-4xl font-extrabold text-[#29243A]">{{ skills.total_count }}</span>
+        <span class="text-[#797386] text-sm">skills</span>
+      </div>
+      <div class="mt-3 text-xs text-[#797386]">
+        <strong class="text-emerald-600 font-bold">{{ skills.demonstrated_count }}</strong> verified in work exp &bull; <strong class="text-amber-600 font-bold">{{ skills.listed_only_count }}</strong> listed only
+      </div>
+    </div>
+
+    <!-- Mistakes Found Card -->
+    <div class="glass-card p-6 rounded-2xl relative overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-[#797386]">Resume Issues</span>
+        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full {% if mistakes_data.critical_count > 0 %}bg-rose-50 text-rose-700 border border-rose-200{% else %}bg-emerald-50 text-emerald-700 border border-emerald-200{% endif %}">
+          {{ mistakes_data.total_issues }} detected
+        </span>
+      </div>
+      <div class="flex items-baseline space-x-2">
+        <span class="text-4xl font-extrabold text-[#29243A]">{{ mistakes_data.critical_count }}</span>
+        <span class="text-rose-600 text-sm font-bold">Critical</span>
+      </div>
+      <div class="mt-3 text-xs text-[#797386]">
+        {{ mistakes_data.warning_count }} warnings &bull; {{ mistakes_data.tip_count }} optimization tips
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Executive Summary Banner (if available) -->
+  {% if analysis.llm_summary %}
+  <div class="glass-panel p-6 rounded-2xl border-l-4 border-[#F4728B] bg-gradient-to-r from-[#FFF1E8]/70 to-[#FFFCF8] space-y-3 shadow-sm border border-[#F0E5DE]">
+    <div class="flex items-center space-x-2 text-[#E11D48] text-xs font-bold uppercase tracking-wider">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      <span>Executive Coaching Assessment</span>
+    </div>
+    <div class="text-sm text-[#29243A] leading-relaxed space-y-2">
+      {% for para in analysis.llm_summary.split('\n\n') %}
+      <p>{{ para | safe }}</p>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Tabbed Navigation Bar -->
+  <div class="border-b border-[#F0E5DE]">
+    <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto pb-px" aria-label="Tabs">
+      <button 
+        type="button" 
+        data-tab="overview"
+        class="dashboard-tab-btn px-4 py-3 text-xs sm:text-sm font-bold border-b-2 rounded-t-xl transition-all border-[#F4728B] text-[#E11D48] bg-[#FFF1E8]"
+      >
+        Skills Overview
+      </button>
+      <button 
+        type="button" 
+        data-tab="roles"
+        class="dashboard-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 rounded-t-xl transition-all border-transparent text-[#797386] hover:text-[#29243A]"
+      >
+        Recommended Roles
+        <span class="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-[#FFF1E8] text-[#E11D48] font-mono border border-[#FDBA9A]/40">{{ recommended_roles|length }}</span>
+      </button>
+      <button 
+        type="button" 
+        data-tab="match"
+        class="dashboard-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 rounded-t-xl transition-all border-transparent text-[#797386] hover:text-[#29243A]"
+      >
+        Match Details
+        <span class="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-[#FFF1E8] text-[#E11D48] font-mono border border-[#FDBA9A]/40">{{ analysis.match_score }}%</span>
+      </button>
+      <button 
+        type="button" 
+        data-tab="learning"
+        class="dashboard-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 rounded-t-xl transition-all border-transparent text-[#797386] hover:text-[#29243A]"
+      >
+        Skills to Learn
+        <span class="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-emerald-50 text-emerald-700 font-mono border border-emerald-200">+{{ learning_plan.score_gain }}%</span>
+      </button>
+      <button 
+        type="button" 
+        data-tab="mistakes"
+        class="dashboard-tab-btn px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 rounded-t-xl transition-all border-transparent text-[#797386] hover:text-[#29243A]"
+      >
+        Resume Mistakes
+        <span class="ml-1.5 px-2 py-0.5 text-xs rounded-full bg-rose-50 text-rose-700 font-mono border border-rose-200">{{ mistakes_data.total_issues }}</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- TAB PANELS -->
+
+  <!-- 1. Skills Overview Tab -->
+  <div id="tab-panel-overview" class="dashboard-tab-panel space-y-6">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Category Chart -->
+      <div class="glass-panel p-6 rounded-2xl bg-[#FFFCF8] border border-[#F0E5DE]">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386] mb-4">Skills by Category</h3>
+        <div class="h-60 relative">
+          <canvas id="skillsCategoryChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Skills Attribution Breakdown -->
+      <div class="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-6 bg-[#FFFCF8] border border-[#F0E5DE]">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386]">All Identified Skills</h3>
+          <div class="flex items-center space-x-3 text-xs">
+            <span class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span class="text-[#29243A] font-medium">Demonstrated in Experience</span>
+            </span>
+            <span class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <span class="text-[#29243A] font-medium">Listed Only (Not Proven)</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          {% for category, items in skills.categorized.items() %}
+          <div>
+            <h4 class="text-xs font-bold text-[#797386] mb-2">{{ category }} ({{ items|length }})</h4>
+            <div class="flex flex-wrap gap-2">
+              {% for skill in items %}
+              <div class="skill-chip px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1.5 border {% if skill.demonstrated %}bg-emerald-50 text-emerald-800 border-emerald-200{% else %}bg-amber-50 text-amber-800 border-amber-200{% endif %} shadow-sm">
+                <span>{{ skill.name }}</span>
+                {% if not skill.demonstrated %}
+                <span title="Listed in skills list but not demonstrated in experience bullets" class="text-amber-600">⚠️</span>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 2. Recommended Roles Tab -->
+  <div id="tab-panel-roles" class="dashboard-tab-panel hidden space-y-6">
+    
+    <div class="glass-panel p-6 rounded-2xl bg-[#FFFCF8] border border-[#F0E5DE]">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386] mb-2">Role Fit Comparison</h3>
+      <p class="text-xs text-[#797386] mb-4">Ranked evaluation across 10 industry software & data roles based on your verified skills.</p>
+      <div class="h-64 relative">
+        <canvas id="rolesBarChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Role Recommendation Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% for role in recommended_roles %}
+      <div class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-4 bg-[#FFFCF8] border border-[#F0E5DE] {% if role.id == analysis.selected_role or role.title == analysis.selected_role %}ring-2 ring-[#F4728B]{% endif %}">
+        
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-[#FFF1E8] text-[#E11D48] border border-[#FDBA9A]/40">
+              {{ role.category }}
+            </span>
+            <div class="text-lg font-extrabold {% if role.fit_percentage >= 75 %}text-emerald-600{% elif role.fit_percentage >= 50 %}text-[#E11D48]{% else %}text-[#797386]{% endif %}">
+              {{ role.fit_percentage }}% Fit
+            </div>
+          </div>
+
+          <h4 class="text-base font-bold text-[#29243A]">{{ role.title }}</h4>
+          <p class="text-xs text-[#797386] mt-1 line-clamp-2 leading-relaxed">{{ role.description }}</p>
+
+          <div class="mt-3 p-2.5 rounded-xl bg-[#FFF1E8]/60 text-xs text-[#E11D48] font-semibold border border-[#FDBA9A]/40">
+            {{ role.reason }}
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          {% if role.missing_required %}
+          <div>
+            <span class="text-[11px] font-bold text-rose-600 uppercase tracking-wider block mb-1">Key Missing Skills:</span>
+            <div class="flex flex-wrap gap-1">
+              {% for m in role.missing_required[:3] %}
+              <span class="px-2 py-0.5 rounded text-[11px] bg-rose-50 text-rose-700 border border-rose-200 font-semibold">{{ m }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <form action="/dashboard/{{ analysis.id }}/rematch" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="target_role" value="{{ role.id }}">
+            <button 
+              type="submit" 
+              class="w-full py-2 px-3 rounded-xl text-xs font-bold {% if role.id == analysis.selected_role or role.title == analysis.selected_role %}bg-[#E11D48] text-white shadow-md{% else %}bg-white hover:bg-[#FFF1E8] text-[#29243A] border border-[#F0E5DE]{% endif %} transition-colors"
+            >
+              {% if role.id == analysis.selected_role or role.title == analysis.selected_role %}Active Target Role{% else %}Select & Analyze This Role &rarr;{% endif %}
+            </button>
+          </form>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- 3. Match Details Tab -->
+  <div id="tab-panel-match" class="dashboard-tab-panel hidden space-y-6">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Match Doughnut Chart -->
+      <div class="glass-panel p-6 rounded-2xl text-center flex flex-col items-center justify-center bg-[#FFFCF8] border border-[#F0E5DE]">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386] mb-2">Match Fit Gauge</h3>
+        <div class="w-48 h-48 relative my-2">
+          <canvas id="matchDoughnutChart"></canvas>
+          <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span class="text-3xl font-extrabold text-[#29243A]">{{ analysis.match_score }}%</span>
+            <span class="text-xs text-[#797386] font-semibold">Fit Score</span>
+          </div>
+        </div>
+        <p class="text-xs text-[#797386] mt-2 max-w-xs leading-relaxed">
+          Weighted: 70% core required skills, 30% nice-to-have, blended with TF-IDF semantic relevance.
+        </p>
+      </div>
+
+      <!-- Radar Alignment Chart -->
+      <div class="lg:col-span-2 glass-panel p-6 rounded-2xl bg-[#FFFCF8] border border-[#F0E5DE]">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386] mb-2">Profile vs. Target Role Benchmark</h3>
+        <div class="h-64 relative">
+          <canvas id="matchRadarChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Skill Chips Breakdown -->
+    <div class="glass-panel p-6 rounded-2xl space-y-6 bg-[#FFFCF8] border border-[#F0E5DE]">
+      <h3 class="text-base font-bold text-[#29243A]">Skill Coverage for <span class="text-[#E11D48]">{{ analysis.selected_role }}</span></h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Matched Skills -->
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider">
+              Matched Skills ({{ match_details.matched_required|length + match_details.matched_nice_to_have|length }})
+            </h4>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            {% for s in match_details.matched_required %}
+            <span class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center space-x-1 shadow-sm">
+              <span>✓</span>
+              <span>{{ s }}</span>
+              <span class="text-[10px] text-emerald-600 font-medium">(Core)</span>
+            </span>
+            {% endfor %}
+            {% for s in match_details.matched_nice_to_have %}
+            <span class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50/60 text-emerald-800 border border-emerald-200 flex items-center space-x-1">
+              <span>✓</span>
+              <span>{{ s }}</span>
+              <span class="text-[10px] text-[#797386] font-medium">(Nice-to-have)</span>
+            </span>
+            {% endfor %}
+            {% if not match_details.matched_required and not match_details.matched_nice_to_have %}
+            <span class="text-xs text-[#797386]">No overlapping skills found for this role yet.</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Missing Skills -->
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+            <h4 class="text-xs font-bold text-rose-700 uppercase tracking-wider">
+              Missing Target Skills ({{ match_details.missing_required|length + match_details.missing_nice_to_have|length }})
+            </h4>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            {% for s in match_details.missing_required %}
+            <span class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-1 shadow-sm">
+              <span>✕</span>
+              <span>{{ s }}</span>
+              <span class="text-[10px] text-rose-600 font-medium">(Essential)</span>
+            </span>
+            {% endfor %}
+            {% for s in match_details.missing_nice_to_have %}
+            <span class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 flex items-center space-x-1">
+              <span>✕</span>
+              <span>{{ s }}</span>
+              <span class="text-[10px] text-amber-700 font-medium">(Bonus)</span>
+            </span>
+            {% endfor %}
+            {% if not match_details.missing_required and not match_details.missing_nice_to_have %}
+            <span class="text-xs text-emerald-700 font-semibold">Outstanding! You match 100% of the listed role requirements.</span>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 4. Skills to Learn Tab -->
+  <div id="tab-panel-learning" class="dashboard-tab-panel hidden space-y-6">
+    
+    <!-- Improvement Potential Banner -->
+    <div class="glass-panel p-6 rounded-2xl bg-gradient-to-r from-[#FFF1E8] to-[#F5F3FF] border border-[#FDBA9A]/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+      <div class="space-y-1">
+        <span class="text-xs font-bold uppercase tracking-wider text-[#E11D48]">Target Trajectory</span>
+        <h3 class="text-lg font-extrabold text-[#29243A]">{{ learning_plan.headline }}</h3>
+        <p class="text-xs text-[#797386]">Target score jump: <strong>{{ learning_plan.current_score }}% &rarr; {{ learning_plan.projected_score }}%</strong></p>
+      </div>
+      <div class="px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-bold shrink-0 shadow-sm">
+        +{{ learning_plan.score_gain }}% Potential Gain
+      </div>
+    </div>
+
+    <!-- 30/60/90 Day Roadmap -->
+    <div class="glass-panel p-6 rounded-2xl space-y-6 bg-[#FFFCF8] border border-[#F0E5DE]">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386]">Structured 30 / 60 / 90-Day Learning Plan</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {% for key in ['month_1', 'month_2', 'month_3'] %}
+        {% set milestone = learning_plan.timeline[key] %}
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-[#F4728B] bg-[#FFFCF8] space-y-3">
+          <div class="text-xs font-bold text-[#E11D48] uppercase tracking-wider">{{ milestone.title }}</div>
+          <div class="text-xs text-[#29243A] leading-relaxed">{{ milestone.description }}</div>
+          <div class="p-2.5 rounded-xl bg-[#FFF1E8]/70 border border-[#FDBA9A]/40 text-[11px] text-[#29243A]">
+            <strong class="text-[#E11D48]">Milestone:</strong> {{ milestone.milestone }}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Prioritized Missing Skills Cards -->
+    <div class="space-y-4">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386]">Prioritized Skills to Master</h3>
+      
+      <div class="space-y-4">
+        {% for item in learning_plan.must_learn %}
+        <div class="glass-card p-6 rounded-2xl space-y-4 bg-[#FFFCF8] border border-[#F0E5DE]">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex items-center space-x-3">
+              <span class="px-3 py-1 rounded-md text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                Must Learn
+              </span>
+              <h4 class="text-base font-bold text-[#29243A]">{{ item.skill }}</h4>
+            </div>
+            <div class="flex items-center space-x-3 text-xs text-[#797386]">
+              <span>Difficulty: <strong class="text-[#29243A]">{{ item.difficulty }}</strong></span>
+              <span>&bull; Est. Time: <strong class="text-[#29243A]">{{ item.time_to_learn }}</strong></span>
+            </div>
+          </div>
+
+          <p class="text-xs sm:text-sm text-[#29243A] leading-relaxed">{{ item.why_it_matters }}</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-[#FFF1E8]/60 border border-[#FDBA9A]/40">
+              <span class="text-[#E11D48] font-bold block mb-1">Accelerated Learning Tip:</span>
+              <span class="text-[#29243A]">{{ item.related_transfer_note }}</span>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200">
+              <span class="text-emerald-700 font-bold block mb-1">Resume Proof Mini-Project:</span>
+              <span class="text-[#29243A]">{{ item.mini_project_idea }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        {% for item in learning_plan.should_learn %}
+        <div class="glass-card p-6 rounded-2xl space-y-4 bg-[#FFFCF8] border border-[#F0E5DE]">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex items-center space-x-3">
+              <span class="px-3 py-1 rounded-md text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                Should Learn
+              </span>
+              <h4 class="text-base font-bold text-[#29243A]">{{ item.skill }}</h4>
+            </div>
+            <div class="flex items-center space-x-3 text-xs text-[#797386]">
+              <span>Difficulty: <strong class="text-[#29243A]">{{ item.difficulty }}</strong></span>
+              <span>&bull; Est. Time: <strong class="text-[#29243A]">{{ item.time_to_learn }}</strong></span>
+            </div>
+          </div>
+
+          <p class="text-xs sm:text-sm text-[#29243A] leading-relaxed">{{ item.why_it_matters }}</p>
+
+          <div class="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200 text-xs">
+            <span class="text-emerald-700 font-bold block mb-1">Resume Proof Mini-Project:</span>
+            <span class="text-[#29243A]">{{ item.mini_project_idea }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 5. Resume Mistakes Tab -->
+  <div id="tab-panel-mistakes" class="dashboard-tab-panel hidden space-y-6">
+    
+    <!-- Filter bar -->
+    <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl glass-panel bg-[#FFFCF8] border border-[#F0E5DE]">
+      <div class="flex items-center space-x-2">
+        <span class="text-xs font-bold text-[#797386]">Filter by Severity:</span>
+        <button type="button" data-filter="all" class="severity-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#E11D48] text-white transition-colors">
+          All ({{ mistakes_data.total_issues }})
+        </button>
+        <button type="button" data-filter="Critical" class="severity-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#797386] hover:text-[#29243A] border border-[#F0E5DE] transition-colors">
+          Critical ({{ mistakes_data.critical_count }})
+        </button>
+        <button type="button" data-filter="Warning" class="severity-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#797386] hover:text-[#29243A] border border-[#F0E5DE] transition-colors">
+          Warnings ({{ mistakes_data.warning_count }})
+        </button>
+        <button type="button" data-filter="Tip" class="severity-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-[#797386] hover:text-[#29243A] border border-[#F0E5DE] transition-colors">
+          Tips ({{ mistakes_data.tip_count }})
+        </button>
+      </div>
+
+      <div class="text-xs text-[#797386]">
+        Quality Score Deductions: <strong class="text-rose-600 font-bold">-{{ (100 - analysis.quality_score)|round(1) }} pts</strong>
+      </div>
+    </div>
+
+    <!-- Mistakes List -->
+    <div class="space-y-4">
+      {% for issue in mistakes_data.issues %}
+      <div 
+        class="mistake-card glass-card p-6 rounded-2xl space-y-4 bg-[#FFFCF8] border-l-4 {% if issue.severity == 'Critical' %}border-rose-500{% elif issue.severity == 'Warning' %}border-amber-500{% else %}border-blue-500{% endif %}"
+        data-severity="{{ issue.severity }}"
+      >
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-center space-x-3">
+            <span class="px-2.5 py-0.5 rounded text-xs font-bold {% if issue.severity == 'Critical' %}bg-rose-50 text-rose-700 border border-rose-200{% elif issue.severity == 'Warning' %}bg-amber-50 text-amber-700 border border-amber-200{% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+              {{ issue.severity }}
+            </span>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#797386]">{{ issue.category }}</span>
+          </div>
+          <span class="text-xs text-[#797386] font-mono">{{ issue.location }}</span>
+        </div>
+
+        <h4 class="text-base font-bold text-[#29243A]">{{ issue.issue }}</h4>
+
+        <div class="text-xs sm:text-sm text-[#29243A] leading-relaxed">
+          <strong class="text-[#797386]">Why it matters:</strong> {{ issue.why }}
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-[#FFF1E8]/60 border border-[#FDBA9A]/40 text-xs sm:text-sm">
+          <div class="flex items-center space-x-1.5 text-emerald-700 font-bold mb-1">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <span>Suggested Fix / Rewrite:</span>
+          </div>
+          <div class="text-[#29243A] leading-relaxed font-mono text-xs">{{ issue.fix }}</div>
+        </div>
+      </div>
+      {% endfor %}
+      
+      {% if not mistakes_data.issues %}
+      <div class="p-8 text-center glass-panel rounded-2xl text-emerald-700 font-bold text-sm bg-emerald-50 border border-emerald-200">
+        🎉 No resume mistakes detected! Your document meets top ATS formatting standards.
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Modal: Change Target Role / Re-match -->
+<div id="rematch-modal" class="hidden fixed inset-0 z-50 bg-[#29243A]/40 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="glass-panel p-6 sm:p-8 rounded-3xl max-w-lg w-full space-y-6 shadow-2xl relative bg-[#FFFCF8] border border-[#F0E5DE]">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-bold text-[#29243A]">Re-Match Target Role</h3>
+      <button onclick="document.getElementById('rematch-modal').classList.add('hidden')" class="text-[#797386] hover:text-[#29243A]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <form action="/dashboard/{{ analysis.id }}/rematch" method="POST" class="space-y-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+      <div>
+        <label for="modal-target-role" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-2">Choose Benchmark Role</label>
+        <select 
+          id="modal-target-role" 
+          name="target_role" 
+          class="w-full px-4 py-3 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] text-sm"
+        >
+          {% for r in all_roles %}
+          <option value="{{ r.id }}" {% if r.id == analysis.selected_role or r.title == analysis.selected_role %}selected{% endif %}>
+            {{ r.title }} ({{ r.category }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="modal-custom-jd" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-2">Or Paste Custom Job Description:</label>
+        <textarea 
+          id="modal-custom-jd" 
+          name="custom_jd" 
+          rows="4" 
+          placeholder="Paste requirements from any job posting..."
+          class="w-full px-4 py-3 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] text-xs font-mono"
+        ></textarea>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-2">
+        <button 
+          type="button" 
+          onclick="document.getElementById('rematch-modal').classList.add('hidden')" 
+          class="px-4 py-2.5 rounded-xl text-xs font-semibold text-[#797386] hover:text-[#29243A]"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#F4728B] to-[#FB923C] hover:from-[#E11D48] hover:to-[#F97316] shadow-md shadow-[#F4728B]/20"
+        >
+          Re-Analyze Match
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Expose data to dashboard.js
+  window.DASHBOARD_DATA = {
+    matchScore: {{ analysis.match_score }},
+    qualityScore: {{ analysis.quality_score }},
+    categorizedSkills: {{ skills.categorized | tojson }},
+    recommendedRoles: {{ recommended_roles | tojson }},
+    radarMetrics: {
+      labels: ['Programming', 'Frameworks', 'Databases', 'Cloud/DevOps', 'Data/ML', 'Tools'],
+      candidate: [
+        {{ skills.categorized.get('Programming Languages', [])|length * 15 }},
+        {{ skills.categorized.get('Frameworks', [])|length * 15 }},
+        {{ skills.categorized.get('Databases', [])|length * 18 }},
+        {{ skills.categorized.get('Cloud/DevOps', [])|length * 16 }},
+        {{ skills.categorized.get('Data/ML', [])|length * 14 }},
+        {{ skills.categorized.get('Tools', [])|length * 15 }}
+      ],
+      target: [80, 75, 70, 65, 60, 70]
+    }
+  };
+</script>
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

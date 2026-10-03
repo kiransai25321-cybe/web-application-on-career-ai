@@ -1,0 +1,30 @@
+# Environment variables and secrets
+.env
+.env.local
+*.env
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+.pytest_cache/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Databases
+*.db
+*.sqlite3
+
+# Uploads and temporary artifacts
+*.pdf
+!samples/*.pdf
+*.docx
+!samples/*.docx
+temp/
+scratch/
+.system_generated/

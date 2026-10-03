@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Resumes - AI Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- Header -->
+  <div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-[#29243A]">Compare Resume Iterations</h1>
+    <p class="text-sm text-[#797386] mt-1">Select two resume uploads to evaluate your score gains, added skills, and resolved mistakes.</p>
+  </div>
+
+  <!-- Selector Form -->
+  <div class="glass-panel p-6 rounded-2xl bg-[#FFFCF8] border border-[#F0E5DE]">
+    <form action="/compare" method="GET" class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+      <div>
+        <label for="id1" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-2">Original Resume (V1)</label>
+        <select id="id1" name="id1" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] text-xs font-medium">
+          {% for a in all_analyses %}
+          <option value="{{ a.id }}" {% if analysis1 and analysis1.id == a.id %}selected{% endif %}>
+            {{ a.filename }} ({{ a.selected_role }} &bull; {{ a.created_at[:10] }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label for="id2" class="block text-xs font-bold text-[#797386] uppercase tracking-wider mb-2">Revised Resume (V2)</label>
+        <select id="id2" name="id2" class="w-full px-4 py-2.5 rounded-xl bg-white border border-[#F0E5DE] text-[#29243A] text-xs font-medium">
+          {% for a in all_analyses %}
+          <option value="{{ a.id }}" {% if analysis2 and analysis2.id == a.id %}selected{% endif %}>
+            {{ a.filename }} ({{ a.selected_role }} &bull; {{ a.created_at[:10] }})
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <button type="submit" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#F4728B] to-[#FB923C] hover:from-[#E11D48] hover:to-[#F97316] shadow-md shadow-[#F4728B]/20 transition-all">
+          Compare Versions
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if comparison %}
+  <!-- Comparison Delta Summary -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    
+    <!-- Quality Score Delta -->
+    <div class="glass-card p-6 rounded-2xl relative overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+      <span class="text-xs font-bold uppercase tracking-wider text-[#797386]">Quality Score Delta</span>
+      <div class="flex items-baseline space-x-3 mt-2">
+        <span class="text-3xl font-extrabold text-[#29243A]">{{ comparison.v1_quality }} &rarr; {{ comparison.v2_quality }}</span>
+        <span class="text-sm font-bold {% if comparison.quality_delta >= 0 %}text-emerald-600{% else %}text-rose-600{% endif %} font-mono">
+          {{ '+' if comparison.quality_delta > 0 else '' }}{{ comparison.quality_delta }} pts
+        </span>
+      </div>
+      <p class="text-xs text-[#797386] mt-2">
+        {% if comparison.quality_delta > 0 %}
+        🚀 Significant quality improvement from fixing formatting & mistakes!
+        {% elif comparison.quality_delta == 0 %}
+        Equal quality scores across both versions.
+        {% else %}
+        Quality score dropped. Check newly detected issues below.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Match Score Delta -->
+    <div class="glass-card p-6 rounded-2xl relative overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+      <span class="text-xs font-bold uppercase tracking-wider text-[#797386]">Match Fit Delta</span>
+      <div class="flex items-baseline space-x-3 mt-2">
+        <span class="text-3xl font-extrabold text-[#29243A]">{{ comparison.v1_match }}% &rarr; {{ comparison.v2_match }}%</span>
+        <span class="text-sm font-bold {% if comparison.match_delta >= 0 %}text-emerald-600{% else %}text-rose-600{% endif %} font-mono">
+          {{ '+' if comparison.match_delta > 0 else '' }}{{ comparison.match_delta }}%
+        </span>
+      </div>
+      <p class="text-xs text-[#797386] mt-2">
+        Role benchmark: <strong class="text-[#E11D48]">{{ comparison.v2_role }}</strong>
+      </p>
+    </div>
+
+    <!-- Mistakes Fixed Count -->
+    <div class="glass-card p-6 rounded-2xl relative overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+      <span class="text-xs font-bold uppercase tracking-wider text-[#797386]">Mistakes Resolved</span>
+      <div class="flex items-baseline space-x-2 mt-2">
+        <span class="text-3xl font-extrabold text-emerald-600">{{ comparison.resolved_mistakes|length }}</span>
+        <span class="text-xs text-[#797386] font-semibold">issues resolved</span>
+      </div>
+      <p class="text-xs text-[#797386] mt-2">
+        {{ comparison.remaining_mistakes|length }} active issue(s) remaining in V2.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <!-- Newly Added / Demonstrated Skills -->
+    <div class="glass-panel p-6 rounded-2xl space-y-4 bg-[#FFFCF8] border border-[#F0E5DE]">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-700 flex items-center space-x-2">
+        <span>✨ Newly Added Skills in V2 ({{ comparison.new_skills|length }})</span>
+      </h3>
+      {% if comparison.new_skills %}
+      <div class="flex flex-wrap gap-2">
+        {% for s in comparison.new_skills %}
+        <span class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          + {{ s }}
+        </span>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-xs text-[#797386]">No newly added skills detected between these two versions.</p>
+      {% endif %}
+    </div>
+
+    <!-- Resolved Mistakes -->
+    <div class="glass-panel p-6 rounded-2xl space-y-4 bg-[#FFFCF8] border border-[#F0E5DE]">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-[#E11D48] flex items-center space-x-2">
+        <span>🎉 Resolved Mistakes ({{ comparison.resolved_mistakes|length }})</span>
+      </h3>
+      {% if comparison.resolved_mistakes %}
+      <div class="space-y-2">
+        {% for m in comparison.resolved_mistakes %}
+        <div class="p-3 rounded-xl bg-[#FFF1E8]/60 border border-[#FDBA9A]/40 text-xs">
+          <span class="font-bold text-[#29243A]">{{ m.category }}:</span>
+          <span class="text-[#797386] ml-1">{{ m.issue }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-xs text-[#797386]">No previously detected mistakes were resolved in this iteration.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  {% elif all_analyses|length < 2 %}
+  <div class="glass-panel p-10 rounded-2xl text-center space-y-3 bg-[#FFFCF8] border border-[#F0E5DE]">
+    <h3 class="text-base font-bold text-[#29243A]">Need at least 2 resume analyses to compare</h3>
+    <p class="text-xs text-[#797386] max-w-sm mx-auto">Upload an updated resume after making fixes to compare score jumps and newly verified skills.</p>
+    <a href="/" class="inline-block px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#F4728B] to-[#FB923C] hover:from-[#E11D48] hover:to-[#F97316] transition-colors shadow-sm">
+      Upload Another Resume
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

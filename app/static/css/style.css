@@ -1,0 +1,243 @@
+/* Premium Warm Ivory Light Theme - AI Resume Analyzer (CareerIQ) */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Theme Palette */
+  --bg-main: #FFF9F2;
+  --bg-card: #FFFCF8;
+  --bg-secondary: #FFF1E8;
+  --accent-primary: #F4728B;
+  --accent-primary-hover: #E11D48;
+  --accent-secondary: #FDBA9A;
+  --accent-lavender: #C4B5FD;
+  --accent-orange: #FB923C;
+  --text-main: #29243A;
+  --text-secondary: #797386;
+  --border-color: #F0E5DE;
+  --border-hover: #F4728B;
+  
+  /* Shadow System */
+  --shadow-sm: 0 2px 8px rgba(41, 36, 58, 0.03), 0 1px 2px rgba(244, 114, 139, 0.05);
+  --shadow-md: 0 8px 24px -4px rgba(41, 36, 58, 0.04), 0 4px 12px rgba(244, 114, 139, 0.08);
+  --shadow-lg: 0 16px 36px -6px rgba(41, 36, 58, 0.06), 0 8px 20px rgba(244, 114, 139, 0.12);
+  --shadow-coral: 0 10px 25px -5px rgba(244, 114, 139, 0.3);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient Decorative Background Glows */
+body::before {
+  content: '';
+  position: fixed;
+  top: -10%;
+  left: -10%;
+  width: 55vw;
+  height: 55vw;
+  max-width: 700px;
+  max-height: 700px;
+  background: radial-gradient(circle, rgba(253, 186, 154, 0.25) 0%, rgba(244, 114, 139, 0.12) 45%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  right: -5%;
+  width: 50vw;
+  height: 50vw;
+  max-width: 650px;
+  max-height: 650px;
+  background: radial-gradient(circle, rgba(196, 181, 253, 0.22) 0%, rgba(253, 186, 154, 0.15) 50%, transparent 70%);
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Main Container Positioning */
+nav, main, footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Glass Panels and Cards */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  border-radius: 1.5rem;
+}
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  border-radius: 1.25rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(244, 114, 139, 0.4);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Glow Highlights */
+.glow-primary {
+  box-shadow: 0 8px 25px -5px rgba(244, 114, 139, 0.25);
+}
+
+.glow-accent {
+  box-shadow: 0 8px 25px -5px rgba(253, 186, 154, 0.25);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: #E4D8D0;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* Drag and Drop Zone */
+.drop-zone-active {
+  border-color: var(--accent-primary) !important;
+  background-color: var(--bg-secondary) !important;
+  transform: scale(1.01);
+  box-shadow: 0 0 20px rgba(244, 114, 139, 0.15);
+}
+
+/* Chip Styles */
+.skill-chip {
+  transition: all 0.2s ease;
+}
+.skill-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(41, 36, 58, 0.05);
+}
+
+/* Animated Gradient Background Utility */
+.bg-mesh-gradient {
+  background-color: var(--bg-main);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(244, 114, 139, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(253, 186, 154, 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(196, 181, 253, 0.12) 0px, transparent 50%);
+}
+
+/* Form inputs styling */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  background-color: #FFFFFF !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 0 1px 3px rgba(41, 36, 58, 0.03);
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+  color: #A19BAA !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(244, 114, 139, 0.2) !important;
+}
+
+/* Utility overrides for seamless legacy class compatibility */
+.bg-slate-950, .bg-slate-900, .bg-slate-850 {
+  background-color: var(--bg-card) !important;
+}
+.bg-slate-900\/60, .bg-slate-900\/80, .bg-slate-900\/40, .bg-slate-950\/90, .bg-slate-950\/80 {
+  background-color: rgba(255, 252, 248, 0.95) !important;
+}
+.border-slate-800, .border-slate-700, .border-slate-800\/80, .border-slate-700\/80, .border-slate-700\/90 {
+  border-color: var(--border-color) !important;
+}
+.text-white {
+  color: var(--text-main) !important;
+}
+.text-slate-100, .text-slate-200, .text-slate-300 {
+  color: var(--text-main) !important;
+}
+.text-slate-400, .text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+
+/* Primary Coral Gradient Buttons */
+.btn-gradient-primary,
+button[type="submit"]:not(.severity-filter-btn):not(.btn-secondary) {
+  background: linear-gradient(135deg, #F4728B 0%, #FB923C 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: var(--shadow-coral) !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-gradient-primary:hover,
+button[type="submit"]:not(.severity-filter-btn):not(.btn-secondary):hover {
+  background: linear-gradient(135deg, #E11D48 0%, #F97316 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -4px rgba(244, 114, 139, 0.4) !important;
+}
+
+/* Active Navigation & Tabs */
+.dashboard-tab-btn.active,
+.dashboard-tab-btn[data-tab-active="true"] {
+  background-color: var(--bg-secondary) !important;
+  color: var(--accent-primary-hover) !important;
+  border-bottom-color: var(--accent-primary) !important;
+}
+
+/* Badges & Accents */
+.badge-coral {
+  background-color: var(--bg-secondary);
+  color: var(--accent-primary-hover);
+  border: 1px solid rgba(244, 114, 139, 0.25);
+}
+
+.badge-peach {
+  background-color: #FFF5EE;
+  color: #EA580C;
+  border: 1px solid rgba(253, 186, 154, 0.4);
+}
+
+.badge-lavender {
+  background-color: #F5F3FF;
+  color: #7C3AED;
+  border: 1px solid rgba(196, 181, 253, 0.4);
+}

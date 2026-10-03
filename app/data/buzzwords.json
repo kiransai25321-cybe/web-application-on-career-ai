@@ -1,0 +1,74 @@
+{
+  "buzzwords": [
+    {
+      "term": "hardworking",
+      "reason": "Vague subjective claim that every applicant makes; replace with concrete deliverables and achievements.",
+      "replacement": "Consistently delivered projects on schedule or exceeded quality metrics."
+    },
+    {
+      "term": "team player",
+      "reason": "Overused cliché; show collaboration by highlighting cross-functional partnerships or peer mentorship.",
+      "replacement": "Collaborated with cross-functional teams of designers, engineers, and product managers."
+    },
+    {
+      "term": "results-oriented",
+      "reason": "Generic filler phrase; demonstrate this by stating specific metrics (e.g. latency reduced by 30%, revenue increased by $50k).",
+      "replacement": "Driven by measurable outcomes, evidenced by quantifiable project metrics."
+    },
+    {
+      "term": "go-getter",
+      "reason": "Casual slang unsuited for a professional resume.",
+      "replacement": "Proactively initiated and executed projects ahead of timeline."
+    },
+    {
+      "term": "synergy",
+      "reason": "Empty corporate jargon that adds no informative value.",
+      "replacement": "Cross-team alignment or unified architectural design."
+    },
+    {
+      "term": "self-starter",
+      "reason": "Subjective cliché; demonstrate autonomy through projects spearheaded or self-directed learning.",
+      "replacement": "Independently architected and delivered proof-of-concept solutions."
+    },
+    {
+      "term": "think outside the box",
+      "reason": "Trite idiom; explain the novel technical or business solution you developed.",
+      "replacement": "Devised innovative algorithmic solutions to complex data processing challenges."
+    },
+    {
+      "term": "detail-oriented",
+      "reason": "Telling rather than showing; demonstrate attention to detail through rigorous unit testing, zero defect rates, or clean code.",
+      "replacement": "Maintained 99.8% test coverage and zero regression bugs in production."
+    },
+    {
+      "term": "fast learner",
+      "reason": "Common filler phrase; prove it by showing how quickly you mastered and shipped with a new tech stack.",
+      "replacement": "Rapidly mastered and shipped production services with newly adopted frameworks within 3 weeks."
+    },
+    {
+      "term": "guru",
+      "reason": "Unprofessional and informal title; state your actual expertise or role level.",
+      "replacement": "Subject matter expert or senior specialist in backend systems."
+    },
+    {
+      "term": "ninja",
+      "reason": "Unprofessional buzzword that confuses ATS scanners.",
+      "replacement": "Proficient engineer or specialist."
+    },
+    {
+      "term": "rockstar",
+      "reason": "Vague buzzword disliked by technical hiring managers.",
+      "replacement": "High-performing engineer or top contributor."
+    },
+    {
+      "term": "strategic thinker",
+      "reason": "Abstract claim without backing context.",
+      "replacement": "Aligned engineering roadmaps with business KPIs."
+    },
+    {
+      "term": "proven track record",
+      "reason": "Cliche statement; let your accomplishments and quantitative outcomes speak for themselves.",
+      "replacement": "Demonstrated history of delivering high-impact systems."
+    }
+  ]
+}

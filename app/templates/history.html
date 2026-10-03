@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis History - AI Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-[#29243A]">Resume Analysis History</h1>
+      <p class="text-sm text-[#797386] mt-1">Track your score improvements, reopen past analyses, or compare iterations.</p>
+    </div>
+    <div class="flex items-center space-x-3">
+      <a href="/compare" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-white hover:bg-[#FFF1E8] text-[#29243A] border border-[#F0E5DE] transition-colors flex items-center space-x-2 shadow-sm">
+        <svg class="w-4 h-4 text-[#F4728B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        <span>Compare 2 Resumes</span>
+      </a>
+      <a href="/" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#F4728B] to-[#FB923C] hover:from-[#E11D48] hover:to-[#F97316] shadow-md shadow-[#F4728B]/20 transition-all flex items-center space-x-2">
+        <span>+ Upload New Resume</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Score Progression Chart (if >= 2 analyses) -->
+  {% if analyses|length >= 2 %}
+  <div class="glass-panel p-6 rounded-2xl bg-[#FFFCF8] border border-[#F0E5DE]">
+    <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386] mb-2">Score Progression Over Time</h3>
+    <p class="text-xs text-[#797386] mb-4">See how your Quality Score and Match Scores improve with each revision.</p>
+    <div class="h-60 relative">
+      <canvas id="historyTrendChart"></canvas>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Analyses Table -->
+  <div class="glass-panel rounded-2xl overflow-hidden bg-[#FFFCF8] border border-[#F0E5DE]">
+    <div class="p-5 border-b border-[#F0E5DE] flex items-center justify-between">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-[#797386]">All Saved Analyses ({{ analyses|length }})</h3>
+    </div>
+
+    {% if analyses %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs sm:text-sm">
+        <thead class="bg-[#FFF1E8]/70 text-[#797386] text-xs uppercase tracking-wider border-b border-[#F0E5DE]">
+          <tr>
+            <th class="px-6 py-3.5 font-bold">Resume File</th>
+            <th class="px-6 py-3.5 font-bold">Target Role</th>
+            <th class="px-6 py-3.5 font-bold text-center">Quality Score</th>
+            <th class="px-6 py-3.5 font-bold text-center">Match Fit</th>
+            <th class="px-6 py-3.5 font-bold">Date</th>
+            <th class="px-6 py-3.5 font-bold text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#F0E5DE] text-[#29243A]">
+          {% for item in analyses %}
+          <tr class="hover:bg-[#FFF1E8]/40 transition-colors group">
+            <td class="px-6 py-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-[#FFF1E8] text-[#E11D48] flex items-center justify-center shrink-0 border border-[#FDBA9A]/40">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div class="font-bold text-[#29243A] group-hover:text-[#E11D48] transition-colors truncate max-w-xs">
+                  {{ item.filename }}
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-[#FFF1E8] text-[#E11D48] border border-[#FDBA9A]/40">
+                {{ item.selected_role }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-center font-bold font-mono text-emerald-600">
+              {{ item.quality_score }}/100
+            </td>
+            <td class="px-6 py-4 text-center font-bold font-mono text-[#E11D48]">
+              {{ item.match_score }}%
+            </td>
+            <td class="px-6 py-4 text-[#797386] font-mono text-xs">
+              {{ item.created_at.strftime('%Y-%m-%d %H:%M') if item.created_at else '' }}
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end space-x-2">
+                <a href="/dashboard/{{ item.id }}" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-[#F4728B] to-[#FB923C] hover:from-[#E11D48] hover:to-[#F97316] text-white transition-all shadow-sm">
+                  Open
+                </a>
+                <a href="/report/{{ item.id }}.pdf" target="_blank" class="p-1.5 rounded-lg text-[#797386] hover:text-[#29243A] hover:bg-[#FFF1E8] transition-colors" title="Download PDF">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </a>
+                <form action="/history/{{ item.id }}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this analysis report?');" class="inline">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                  <button type="submit" class="p-1.5 rounded-lg text-[#797386] hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="p-12 text-center space-y-4">
+      <div class="w-12 h-12 mx-auto rounded-full bg-[#FFF1E8] text-[#E11D48] flex items-center justify-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <div>
+        <h4 class="text-base font-bold text-[#29243A]">No resume analyses yet</h4>
+        <p class="text-xs text-[#797386] mt-1">Upload your first resume to see your complete skill profile and diagnostics.</p>
+      </div>
+      <a href="/" class="inline-block px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#F4728B] to-[#FB923C] hover:from-[#E11D48] hover:to-[#F97316] transition-colors shadow-sm">
+        Analyze First Resume
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if analyses|length >= 2 %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const trendCtx = document.getElementById('historyTrendChart');
+    if (trendCtx) {
+      const labels = {{ chart_labels | tojson }};
+      const qualityScores = {{ chart_quality | tojson }};
+      const matchScores = {{ chart_match | tojson }};
+
+      new Chart(trendCtx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Resume Quality Score',
+              data: qualityScores,
+              borderColor: '#059669',
+              backgroundColor: 'rgba(5, 150, 105, 0.08)',
+              tension: 0.3,
+              fill: true,
+              pointRadius: 4,
+            },
+            {
+              label: 'Target Match Fit (%)',
+              data: matchScores,
+              borderColor: '#F4728B',
+              backgroundColor: 'rgba(244, 114, 139, 0.08)',
+              tension: 0.3,
+              fill: true,
+              pointRadius: 4,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              min: 0,
+              max: 100,
+              grid: { color: '#F0E5DE' },
+              ticks: { color: '#797386' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#797386' }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: '#29243A', boxWidth: 12 }
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}
